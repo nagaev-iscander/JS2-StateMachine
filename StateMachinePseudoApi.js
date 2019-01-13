@@ -1,4 +1,6 @@
-import { machine, useContext, useState } from 'my-state-machine'
+import { machine, useContext, useState } from './my-state-machine.js'
+
+console.log("Start");
 
 // machine — создает инстанс state machine (фабрика)
 const vacancyMachine = machine({
@@ -7,7 +9,7 @@ const vacancyMachine = machine({
   // начальное состояние
 	initialState: 'notResponded',
   // дополнительный контекст (payload)
-	context: {id: 123}
+	context: {id: 123},
   // Граф состояний и переходов между ними
 	states: {
     // Каждое поле — это возможное состоение
@@ -18,6 +20,7 @@ const vacancyMachine = machine({
 		notResponded: {
       // action, который нужно выполнить при выходе из этого состояния. Можно задавать массивом, строкой или функцией                         
 			onExit() {
+				
 				console.log('we are leaving notResponded state');
 			},
       // Блок описания транзакций
@@ -27,9 +30,11 @@ const vacancyMachine = machine({
           // упрощенный сервис, вызываем при транзакции
 				  service: (event) => {
             // Позволяет получить текущий контекст и изменить его
-				  	const [contex, setContext] = useContext()			
+				  	const [context, setContext] = useContext()
+				  				
             // Позволяет получить текущий стейт и изменить его
             const [state, setState] = useState();
+
             // Поддерживаются асинхронные действия
 					  window.fetch({method: 'post', data: {resume: event.resume, vacancyId: context.id} }).then(() => {
               // меняем состояние
@@ -46,7 +51,7 @@ const vacancyMachine = machine({
 	},
   // Раздел описание экшенов 
 	actions: {
-    onStateEntry: (event) {
+    onStateEntry: (event) => {
       const [state] = useState();
 		  console.log('now state is ' + state);
 	  },
@@ -59,4 +64,5 @@ const vacancyMachine = machine({
 })
 
 // Пример использования StateMachine
-vacancyMachine.transition('RESPOND', {resume: {name: 'Vasya', lastName: 'Pupkin'}});
+var result=vacancyMachine.transition('RESPOND', {resume: {name: 'Vasya', lastName: 'Pupkin'}});
+console.log(result);
